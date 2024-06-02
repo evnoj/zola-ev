@@ -12,6 +12,7 @@ use utils::net::is_external_link;
 
 use crate::context::RenderContext;
 use errors::{Context, Error, Result};
+use libs::latex2mathml::{latex_to_mathml, DisplayStyle};
 use libs::pulldown_cmark_escape::escape_html;
 use libs::regex::{Regex, RegexBuilder};
 use utils::site::resolve_internal_link;
@@ -447,6 +448,10 @@ pub fn markdown_to_html(
         opts.insert(Options::ENABLE_GFM);
     }
 
+    if context.config.markdown.math {
+        opts.insert(Options::ENABLE_MATH);
+    }
+
     // we reverse their order so we can pop them easily in order
     let mut html_shortcodes: Vec<_> = html_shortcodes.into_iter().rev().collect();
     let mut next_shortcode = html_shortcodes.pop();
@@ -708,6 +713,26 @@ pub fn markdown_to_html(
                     if contains_shortcode(text.as_ref()) =>
                 {
                     render_shortcodes!(false, text, range);
+                }
+                Event::DisplayMath(text) => {
+                    let mathml = latex_to_mathml(text.as_ref(), DisplayStyle::Block);
+                    events.push(match mathml {
+                        Err(e) => {
+                            error = Some(e.into());
+                            Event::DisplayMath(text)
+                        }
+                        Ok(mathml) => Event::Html(mathml.into()),
+                    })
+                }
+                Event::InlineMath(text) => {
+                    let mathml = latex_to_mathml(text.as_ref(), DisplayStyle::Inline);
+                    events.push(match mathml {
+                        Err(e) => {
+                            error = Some(e.into());
+                            Event::InlineMath(text)
+                        }
+                        Ok(mathml) => Event::Html(mathml.into()),
+                    })
                 }
                 _ => events.push(event),
             }

@@ -1,3 +1,10 @@
+# changes from upstream
+Please navigate to [this branch](https://github.com/evnoj/zola-ev/tree/mathml). I'm not deleting this branch because I have linked it externally and cannot change the link.
+
+## notes
+- Should likely switch to the [math-core](https://github.com/tmke8/math-core) crate for the LaTeX to MathML conversion, as it seems better maintained and focuses on "MathML Core", a simplified modern version of MathML that seems to be the future.
+- I'd also like to look into enabling AsciiMath support via [mathemascii](https://github.com/nfejzic/mathemascii)
+
 # zola (né Gutenberg) <img src="docs/static/logos/Zola-logo-main-coffee.svg" align="right" alt="zola logo" width="30%"/>
 
 [![Build Status](https://dev.azure.com/getzola/zola/_apis/build/status/getzola.zola?branchName=master)](https://dev.azure.com/getzola/zola/_build/latest?definitionId=1&branchName=master)
